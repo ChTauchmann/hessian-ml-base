@@ -5,7 +5,7 @@
 # Build: docker build -t ctctctct/hessian-ml-base:latest .
 # Push:  docker push ctctctct/hessian-ml-base:latest
 
-FROM mbrack/forty-two:latest
+FROM mbrack/forty-two:cuda-12.5-pytorch-2.2-gpu-mpi-multimodal
 
 LABEL maintainer="HessianLLM"
 LABEL description="Extended forty-two image with tmux and convenience tools"
