@@ -7,7 +7,8 @@
 FROM pytorch/pytorch:2.5.1-cuda12.4-cudnn9-devel
 
 # Copy libnss_determined from official Determined image for SSH user injection
-COPY --from=determinedai/pytorch-ngc:24.10-pytorch2.5-gpu /usr/lib/libnss_determined.so.2 /usr/lib/libnss_determined.so.2
+# Note: determinedai/pytorch-ngc uses semantic versioning (e.g., 0.38.1)
+COPY --from=determinedai/pytorch-ngc:0.38.1 /usr/lib/libnss_determined.so.2 /usr/lib/libnss_determined.so.2
 
 LABEL maintainer="HessianLLM"
 LABEL description="Robust ML base image with PyTorch 2.5.1, CUDA 12.4, Flash Attention, and common ML tools"
