@@ -38,11 +38,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     # Build tools (for packages that need compilation)
     build-essential \
     ninja-build \
-    # Networking
+    # Networking (openssh-server required for Determined AI shells)
     openssh-client \
+    openssh-server \
     netcat \
     && rm -rf /var/lib/apt/lists/* \
-    && git lfs install
+    && git lfs install \
+    && mkdir -p /var/run/sshd
 
 # Flash Attention 2 - Pre-built wheel for PyTorch 2.5 + CUDA 12.4 + Python 3.11
 # Using pre-built wheel to avoid 30+ min compilation
