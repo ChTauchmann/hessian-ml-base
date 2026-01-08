@@ -6,6 +6,9 @@
 
 FROM pytorch/pytorch:2.5.1-cuda12.4-cudnn9-devel
 
+# Copy libnss_determined from official Determined image for SSH user injection
+COPY --from=determinedai/pytorch-ngc:24.10-pytorch2.5-gpu /usr/lib/libnss_determined.so.2 /usr/lib/libnss_determined.so.2
+
 LABEL maintainer="HessianLLM"
 LABEL description="Robust ML base image with PyTorch 2.5.1, CUDA 12.4, Flash Attention, and common ML tools"
 
@@ -45,6 +48,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/* \
     && git lfs install \
     && mkdir -p /var/run/sshd
+
+# Configure libnss_determined for Determined AI user injection
+# This allows Determined to inject users (like ct1002) at runtime for SSH authentication
+RUN chmod 755 /usr/lib/libnss_determined.so.2 \
+    && sed -E -i -e 's/^(passwd:.*)/\1 determined/' /etc/nsswitch.conf \
+    && sed -E -i -e 's/^(group:.*)/\1 determined/' /etc/nsswitch.conf \
+    && sed -E -i -e 's/^(shadow:.*)/\1 determined/' /etc/nsswitch.conf
+
+# Remove default SSH host keys - Determined generates its own
+RUN rm -f /etc/ssh/ssh_host_ecdsa_key /etc/ssh/ssh_host_ed25519_key /etc/ssh/ssh_host_rsa_key 2>/dev/null || true
 
 # Flash Attention 2 - Pre-built wheel for PyTorch 2.5 + CUDA 12.4 + Python 3.11
 # Using pre-built wheel to avoid 30+ min compilation
